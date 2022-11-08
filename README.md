@@ -1,9 +1,8 @@
-# Learn Coding Server
+# TripGuide Server
 
-React Auth Assignment Server
+React Assignment Server
 
 ## Features
 
-* Access all course
-* Get course by ID
-* Access images
+* Access all service
+* Get service by ID
