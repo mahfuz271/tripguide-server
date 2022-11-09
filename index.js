@@ -43,9 +43,9 @@ async function run() {
         })
 
         //rating manage
-
         app.post('/addReview', verifyJWT, async (req, res) => {
             const s = req.body;
+            s.created = new Date(Date.now());
             const result = await ratingCollection.insertOne(s);
             res.send(result);
         });
@@ -53,7 +53,7 @@ async function run() {
         app.get('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const query = { service_id: id }
-            const cursor = ratingCollection.find(query);
+            const cursor = ratingCollection.find(query).sort({created: -1}, function(err, cursor){})
             const reviews = await cursor.toArray();
             res.send(reviews);
         })
