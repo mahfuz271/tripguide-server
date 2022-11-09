@@ -50,6 +50,14 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/reviews/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { service_id: ObjectId(id) }
+            const cursor = ratingCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        })
+        
         //get services
         app.get('/services', async (req, res) => {
             const query = {}
