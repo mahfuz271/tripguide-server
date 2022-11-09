@@ -34,6 +34,7 @@ async function run() {
     try {
         const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
         const serviceCollection = client.db('tripguide').collection('services');
+        const ratingCollection = client.db('tripguide').collection('ratings');
 
         app.post('/jwt', (req, res) => {
             const user = req.body;
@@ -41,11 +42,20 @@ async function run() {
             res.send({ token })
         })
 
+        //rating manage
+
+        app.post('/addReview', verifyJWT, async (req, res) => {
+            const s = req.body;
+            const result = await ratingCollection.insertOne(s);
+            res.send(result);
+        });
+
+        //get services
         app.get('/services', async (req, res) => {
             const query = {}
             const limit = parseInt(req.query?.limit);
             const cursor = serviceCollection.find(query);
-            if(limit>0){
+            if (limit > 0) {
                 cursor.limit(limit);
             }
             const services = await cursor.toArray();
@@ -58,7 +68,8 @@ async function run() {
             const service = await serviceCollection.findOne(query);
             res.send(service);
         });
-        // orders api
+
+        // services manage api
         app.get('/allServices', verifyJWT, async (req, res) => {
             const decoded = req.decoded;
 
