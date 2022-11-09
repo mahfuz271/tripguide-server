@@ -50,10 +50,46 @@ async function run() {
             res.send(result);
         });
 
+        app.patch('/MyReviews/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const title = req.body.title
+            const comment = req.body.comment
+            const rating = req.body.rating
+            const query = { _id: ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    title,
+                    comment,
+                    rating
+                }
+            }
+            const result = await ratingCollection.updateOne(query, updatedDoc);
+            res.send(result);
+        })
+
+        app.get('/MyReviews', verifyJWT, async (req, res) => {
+            const decoded = req.decoded;
+
+            if (decoded.email !== req.query.email) {
+                res.status(403).send({ message: 'unauthorized access' })
+            }
+
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = ratingCollection.find(query).sort({ created: -1 }, function (err, cursor) { })
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
+
+        //get review by service if
         app.get('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const query = { service_id: id }
-            const cursor = ratingCollection.find(query).sort({created: -1}, function(err, cursor){})
+            const cursor = ratingCollection.find(query).sort({ created: -1 }, function (err, cursor) { })
             const reviews = await cursor.toArray();
             res.send(reviews);
         })
