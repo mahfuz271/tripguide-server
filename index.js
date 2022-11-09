@@ -67,6 +67,13 @@ async function run() {
             res.send(result);
         })
 
+        app.delete('/MyReviews/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ratingCollection.deleteOne(query);
+            res.send(result);
+        })
+
         app.get('/MyReviews', verifyJWT, async (req, res) => {
             const decoded = req.decoded;
 
@@ -85,7 +92,7 @@ async function run() {
             res.send(orders);
         });
 
-        //get review by service if
+        //get review by service id
         app.get('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const query = { service_id: id }
